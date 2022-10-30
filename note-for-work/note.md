@@ -39,6 +39,8 @@ to-be:
 - database design
 
   - 為什麼 map table 幾乎都使用 compost PK, 有什麼有優缺點
+    - pros
+      - you don't need a special algorithm to make it unique,
   - production database 使用量
   - 目前參與的 table 所有 column 都需要驗證，所以會需要相關的規則和所有參考的 database access
   - 現行 sit 測試環境沒有都可以直接修關改, production 環境也是如此嗎

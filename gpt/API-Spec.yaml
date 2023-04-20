@@ -1,0 +1,106 @@
+openapi: 3.1.0
+info:
+  title: UserRequestHandler API
+  version: 1.0.0
+  description: The API for handling user requests (start/stop) of watchdog processes.
+
+servers:
+  - url: 'https://user-request-handler.example.com'
+
+paths:
+  /watchdogs/{id}/start:
+    post:
+      summary: Start the specified watchdog process
+      description: Sends a command to start the specified watchdog process.
+      operationId: startWatchdog
+      parameters:
+        - name: id
+          in: path
+          description: ID of the watchdog to start
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Watchdog start command sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Watchdog start command sent successfully'
+        '404':
+          description: Watchdog not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Watchdog not found'
+
+  /watchdogs/{id}/stop:
+    post:
+      summary: Stop the specified watchdog process
+      description: Sends a command to stop the specified watchdog process.
+      operationId: stopWatchdog
+      parameters:
+        - name: id
+          in: path
+          description: ID of the watchdog to stop
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Watchdog stop command sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Watchdog stop command sent successfully'
+        '404':
+          description: Watchdog not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Watchdog not found'
+  /watchdogs/status:
+    get:
+      summary: Get watchdog status updates via Server-Sent Events
+      description: Provides real-time status updates of watchdog processes using Server-Sent Events.
+      operationId: getStatusUpdates
+      responses:
+        '200':
+          description: Watchdog status updates
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                example: 'event: watchdogStatus\ndata: {"id": 1, "status": "running"}\n\n'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 'Internal server error'
+
+
+
+

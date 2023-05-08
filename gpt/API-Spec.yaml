@@ -1,105 +1,151 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
-  title: UserRequestHandler API
+  title: Watchdog Management Tool System API
   version: 1.0.0
-  description: The API for handling user requests (start/stop) of watchdog processes.
-
+  description: API specification for the Watchdog Management Tool System
 servers:
-  - url: 'https://user-request-handler.example.com'
-
+  - url: http://localhost:8080/api/v1
 paths:
   /watchdogs/{id}/start:
     post:
-      summary: Start the specified watchdog process
-      description: Sends a command to start the specified watchdog process.
-      operationId: startWatchdog
+      summary: Start a watchdog service
+      description: Starts the watchdog service for the given AP.
       parameters:
         - name: id
           in: path
-          description: ID of the watchdog to start
           required: true
+          description: ID of the watchdog to start the service for
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
-          description: Watchdog start command sent successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'Watchdog start command sent successfully'
+          description: Watchdog service started
+        '400':
+          description: Bad request, invalid input
+        '401':
+          description: Unauthorized
         '404':
           description: Watchdog not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'Watchdog not found'
-
   /watchdogs/{id}/stop:
     post:
-      summary: Stop the specified watchdog process
-      description: Sends a command to stop the specified watchdog process.
-      operationId: stopWatchdog
+      summary: Stop a watchdog service
+      description: Stops the watchdog service for the given AP.
       parameters:
         - name: id
           in: path
-          description: ID of the watchdog to stop
           required: true
+          description: ID of the watchdog to stop the service for
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
-          description: Watchdog stop command sent successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'Watchdog stop command sent successfully'
+          description: Watchdog service stopped
+        '400':
+          description: Bad request, invalid input
+        '401':
+          description: Unauthorized
         '404':
           description: Watchdog not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'Watchdog not found'
-  /watchdogs/status:
-    get:
-      summary: Get watchdog status updates via Server-Sent Events
-      description: Provides real-time status updates of watchdog processes using Server-Sent Events.
-      operationId: getStatusUpdates
+  /watchdogs/check:
+    post:
+      summary: Check the status of selected watchdogs
+      description: Checks the status of the selected watchdogs in the system.
+      requestBody:
+        description: Watchdog information to check the status for
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/WatchdogInfo'
       responses:
         '200':
-          description: Watchdog status updates
-          content:
-            text/event-stream:
-              schema:
-                type: string
-                example: 'event: watchdogStatus\ndata: {"id": 1, "status": "running"}\n\n'
-        '500':
-          description: Internal server error
+          description: The status of selected watchdogs
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 'Internal server error'
+                type: array
+                items:
+                  $ref: '#/components/schemas/WatchdogStatus'
+        '400':
+          description: Bad request, invalid input
+        '401':
+          description: Unauthorized
+  /watchdogs/status:
+    get:
+      summary: Get the status of all watchdogs
+      description: Returns the status of all watchdogs in the system.
+      responses:
+        '200':
+          description: The status of all watchdogs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WatchdogStatus'
+        '401':
+          description: Unauthorized
+  /watchdogs/{id}/status:
+    get:
+      summary: Get the status of a watchdog by ID
+      description: Returns the status of a single watchdog with the given ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the watchdog to retrieve the status for
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The status of the requested watchdog
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchdogStatus'
+        '401':
+          description: Unauthorized
+        '404':
+          description: Watchdog not found
+components:
+  schemas:
+    WatchdogInfo:
+      type: object
+      properties:
+        fab:
+          type: string
+        phase:
+          type: string
+        id:
+          type: string
+        host:
+          type: string
+        category:
+          type: string
+        name:
+          type: string
+        check_command:
+          type: string
+        start_command:
+          type: string
+        stop_command:
+          type: string
+        update_user:
+          type: string
+        update_time:
+          type: string
+    WatchdogStatus:
+      type: object
+      properties:
+        watchdog_id:
+          type: string
+        running_quantity:
+          type: integer
+      required:
+        - watchdog_id
+        - running_quantity
 
 
 

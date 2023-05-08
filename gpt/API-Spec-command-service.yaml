@@ -1,0 +1,105 @@
+openapi: 3.0.0
+info:
+  title: Command Service API
+  version: 1.0.0
+  description: API specification for the Command Service
+servers:
+  - url: http://localhost:8081/api/v1
+paths:
+  /commands:
+    post:
+      summary: Execute a command on a specific server
+      description: Executes the given command on the specified server.
+      requestBody:
+        description: Command information to execute
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommandInfo'
+      responses:
+        '200':
+          description: The command was executed successfully
+        '400':
+          description: Bad request, invalid input
+        '404':
+          description: Server not found
+  /watchdogs:
+    get:
+      summary: Get the list of watchdog info in each phase
+      description: Returns the list of watchdog info in each phase
+      responses:
+        '200':
+          description: The list of watchdog info in each phase
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WatchdogInfo'
+components:
+  schemas:
+    CommandInfo:
+      type: object
+      properties:
+        server:
+          type: string
+          description: The name or IP address of the server to execute the command on
+        command:
+          type: string
+          description: The command to execute on the server
+      required:
+        - server
+        - command
+    WatchdogInfo:
+      type: object
+      properties:
+        fab:
+          type: string
+          description: The name of the fab
+        phase:
+          type: string
+          description: The name of the phase
+        id:
+          type: string
+          description: The ID of the watchdog
+        host:
+          type: string
+          description: The name or IP address of the server where the watchdog is running
+        category:
+          type: string
+          description: The category of the watchdog
+        name:
+          type: string
+          description: The name of the watchdog
+        check_command:
+          type: string
+          description: The command used to check the status of the watchdog
+        start_command:
+          type: string
+          description: The command used to start the watchdog service
+        stop_command:
+          type: string
+          description: The command used to stop the watchdog service
+        update_user:
+          type: string
+          description: The username of the last user who updated the watchdog info
+        update_time:
+          type: string
+          description: The timestamp of the last update of the watchdog info
+      required:
+        - fab
+        - phase
+        - id
+        - host
+        - category
+        - name
+        - check_command
+        - start_command
+        - stop_command
+        - update_user
+        - update_time
+    WatchdogInfoList:
+      type: array
+      items:
+        $ref: '#/components/schemas/WatchdogInfo'

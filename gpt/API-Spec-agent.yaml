@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: Agent API
+  version: 1.0.0
+  description: API specification for the Agent
+servers:
+  - url: http://localhost:8082/api/v1
+paths:
+  /watchdogs/{id}/start:
+    post:
+      summary: Start a watchdog service
+      description: Starts the watchdog service with the specified ID.
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the watchdog to start
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The watchdog was started successfully
+        '400':
+          description: Bad request, invalid input
+        '404':
+          description: Watchdog not found
+  /watchdogs/{id}/stop:
+    post:
+      summary: Stop a watchdog service
+      description: Stops the watchdog service with the specified ID.
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the watchdog to stop
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The watchdog was stopped successfully
+        '400':
+          description: Bad request, invalid input
+        '404':
+          description: Watchdog not found
+  /watchdogs/check:
+    post:
+      summary: Check the status of a list of watchdogs
+      description: Checks the status of the provided list of watchdogs.
+      requestBody:
+        description: List of watchdog IDs to check
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WatchdogCheckList'
+      responses:
+        '200':
+          description: The status of the provided watchdog IDs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WatchdogStatusList'
+components:
+  schemas:
+    WatchdogCheckList:
+      type: object
+      properties:
+        watchdog_ids:
+          type: array
+          items:
+            type: string
+          description: List of watchdog IDs to check
+      required:
+        - watchdog_ids
+    WatchdogStatus:
+      type: object
+      properties:
+        watchdog_id:
+          type: string
+          description: The ID of the watchdog
+        running_quantity:
+          type: integer
+          description: The number of running instances of the watchdog
+      required:
+        - watchdog_id
+        - running_quantity
+    WatchdogStatusList:
+      type: array
+      items:
+        $ref: '#/components/schemas/WatchdogStatus'
